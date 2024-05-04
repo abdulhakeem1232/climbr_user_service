@@ -31,6 +31,7 @@ const grpcServer = () => {
     Register:UserController.signup,
     OtpVerify:UserController.otp,
     Login:UserController.login,
+    LoginwithGoogle:UserController.loginWithGoogle,
   })
   
   grpcServer();

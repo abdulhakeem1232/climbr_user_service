@@ -61,6 +61,17 @@ console.log(email,password,'login controler');
     }catch (err) {
       callback(err);
     } 
-  }
+  },
+  loginWithGoogle:async(call: any, callback: any)=>{
+    try{
+    console.log('logingoogle service cotroller',call.request);
+   const credential=call.request
+   const response=await userService.authenticateWithGoogle(credential)
+    console.log(response,'authresponse');
+   callback(null, { success: response.success, user: response.user });
+    }catch (err) {
+      callback(err);
+    } 
+  },
   
 };

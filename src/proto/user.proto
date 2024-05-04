@@ -4,6 +4,7 @@ service UserServices {
     rpc Register(UserData) returns (RegistrationResponse){};
     rpc OtpVerify(OtpVerifyRequest) returns (OtpVerifyResponse){};
     rpc Login(LoginRequest) returns (LoginResponse){};
+    rpc LoginwithGoogle(GoogleLoginRequest) returns (GoogleLoginResponse){};
 }
 
 message UserData {
@@ -40,3 +41,17 @@ message LoginResponse {
     bool success = 1;
 }
 
+message GoogleLoginRequest {
+  string credential = 1;
+}
+
+message GoogleLoginResponse {
+  bool success = 1;
+  User user = 2;
+}
+
+message User {
+  string id = 1;
+  string email = 2;
+  string name = 3;
+}
