@@ -9,6 +9,7 @@ export interface IUser extends Document{
     avatar?:string;
     education?:string[];
     skills?:string[];
+    isAdmin:boolean
     password:string; 
 
     matchPassword: (enteredPassword: string) => Promise<boolean>
@@ -41,6 +42,11 @@ const UserSchema :Schema<IUser>=new Schema({
         type:String,
         required:false
     }],
+    isAdmin:{
+        type:Boolean,
+required:true,
+default:false
+    },
     password:{
         type:String,
         

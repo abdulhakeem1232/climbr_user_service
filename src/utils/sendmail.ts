@@ -8,11 +8,10 @@ export const emailVerification = async (email: string, otp: string): Promise<voi
             auth: {
                 user: process.env.EMAIL,
                 pass: process.env.PASSWORD
-            }
+            },
         });
         console.log('mail');
         
-
         const mailOptions = {
             from: 'Climbr <climbr@gmail.com>',
             to: email,

@@ -70,8 +70,8 @@ export const userService={
     verifyLogin:async(userdata:Login)=>{
         try{
             const loginResponse=await userRepository.validateUser(userdata)
-            console.log(loginResponse);
-            return {success:loginResponse}
+            console.log(loginResponse,'gotbfrom rep');
+            return loginResponse
         }catch(err){
             throw new Error(`Failed to sign up: ${err}`);   
         }
@@ -105,7 +105,7 @@ export const userService={
             });
             await user.save();
         }
-        return {success:true, user:user}
+        return {user:user,success:true }
     }catch(err){
             throw new Error(`Failed to sign up: ${err}`);   
         }

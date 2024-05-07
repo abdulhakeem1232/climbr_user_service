@@ -1,5 +1,7 @@
 import { Request } from "express";
 import { userService } from "../services/userService";
+import * as grpc from "@grpc/grpc-js";
+
 
 interface UserData {
   name: string;
@@ -57,7 +59,20 @@ console.log(email,password,'login controler');
     console.log('userdata',userdata);
     const loginResponse=await userService.verifyLogin(userdata)
     console.log(loginResponse,'in controller');
-    callback (null,loginResponse)
+    
+    if (loginResponse && loginResponse.issuccess) {
+      callback(null, {
+          isAdmin: loginResponse.isAdmin,
+          success: loginResponse.issuccess,
+          user: loginResponse.user
+      });
+  } else {
+      console.error('Unexpected response from userService.verifyLogin:', loginResponse);
+      callback({
+          code: grpc.status.INTERNAL,
+          message: 'Unexpected response from userService.verifyLogin'
+      });
+  }
     }catch (err) {
       callback(err);
     } 

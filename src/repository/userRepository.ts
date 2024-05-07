@@ -12,6 +12,7 @@ interface Login {
     email: string;
     password:string; 
 }
+
 const userRepository={
     findByEmail:async(email:string): Promise<IUser| null>=>{
         try{
@@ -54,7 +55,7 @@ const userRepository={
                 // let passwordvalue=userdata.password==user.password
                 console.log(passwordvalue,'pass');
                 if(passwordvalue){
-                    return true
+                    return {issuccess:true,isAdmin:user.isAdmin,user:user}
                 }
             }
             return false

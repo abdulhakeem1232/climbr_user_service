@@ -38,7 +38,9 @@ message LoginRequest {
 }
 
 message LoginResponse {
-    bool success = 1;
+  bool isAdmin = 1;
+  bool success = 2;
+  UserData user = 3; 
 }
 
 message GoogleLoginRequest {
