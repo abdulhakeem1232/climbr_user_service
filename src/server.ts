@@ -32,6 +32,8 @@ const grpcServer = () => {
     OtpVerify:UserController.otp,
     Login:UserController.login,
     LoginwithGoogle:UserController.loginWithGoogle,
+    Getall:UserController.getall,
+    UpdateStatus:UserController.updateStatus,
   })
   
   grpcServer();

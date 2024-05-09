@@ -5,13 +5,13 @@ export interface IUser extends Document{
     username:string;
     googleId?:string;
     email:string;
-    mobile:number;
+    mobile:string;
     avatar?:string;
     education?:string[];
     skills?:string[];
     isAdmin:boolean
+    isActive:boolean;
     password:string; 
-
     matchPassword: (enteredPassword: string) => Promise<boolean>
 }
 
@@ -28,7 +28,7 @@ const UserSchema :Schema<IUser>=new Schema({
         required:true
     },
     mobile:{
-        type:Number,
+        type:String,
     },
     avatar:{
         type:String,
@@ -46,6 +46,10 @@ const UserSchema :Schema<IUser>=new Schema({
         type:Boolean,
 required:true,
 default:false
+    },
+    isActive:{
+        type:Boolean,
+        default:true,
     },
     password:{
         type:String,

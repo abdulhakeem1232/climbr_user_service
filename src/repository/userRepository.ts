@@ -4,8 +4,9 @@ import bcrypt from "bcryptjs";
 interface User {
     username: string;
     email: string;
-    mobile:string|number;
+    mobile:string
     password:string;
+    isActive?:boolean;
    
 }
 interface Login {
@@ -48,7 +49,7 @@ const userRepository={
         try{
             const user=await UserModel.findOne({email:userdata.email});
             console.log(user);
-            
+            if(user?.isActive==false) return false
             if(user){
                 console.log(userdata.password);
                 const passwordvalue=await bcrypt.compare(userdata.password, user.password);
@@ -63,7 +64,27 @@ const userRepository={
             console.log('error',err);
             
         }
-    }
+    },
+    getall:async()=>{
+        try{
+const users=await UserModel.find({isAdmin:false},{'_id':1,'username':1,'email':1,'mobile':1,'isActive':1})
+console.log('users',users);
+return users
+        }catch(err){
+            console.error(`Error on getting all user: ${err}`);
+            return null;
+        }
+    },
+    updateStatus:async(User:User)=>{
+        try{
+const user=await UserModel.updateOne({email:User.email},{$set:{isActive:!User.isActive}})
+console.log('user',user);
+return true
+        }catch(err){
+            console.error(`Error on getting all user: ${err}`);
+            return null;
+        }
+    },
 
 
 }  

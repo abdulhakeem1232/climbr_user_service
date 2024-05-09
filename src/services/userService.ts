@@ -8,7 +8,7 @@ dotenv.config();
 interface User{
     username:string;
     email:string;
-    mobile:number;
+    mobile:string;
     password:string; 
 }
 interface Login{
@@ -38,7 +38,7 @@ export const userService={
             const user_data: User = {
                 username: userData.username || '', 
                 email: email || '',
-                mobile: userData.mobile || 0, 
+                mobile: userData.mobile || '', 
                 password: userData.password || '' 
             };
             console.log(user_data,'wiwi');

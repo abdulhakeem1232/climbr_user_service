@@ -5,13 +5,20 @@ service UserServices {
     rpc OtpVerify(OtpVerifyRequest) returns (OtpVerifyResponse){};
     rpc Login(LoginRequest) returns (LoginResponse){};
     rpc LoginwithGoogle(GoogleLoginRequest) returns (GoogleLoginResponse){};
+    rpc Getall(Empty) returns (GetAllUsersResponse){};
+    rpc UpdateStatus(UserData) returns (GetAllUsersResponse){};
+}
+
+message Empty {
+
 }
 
 message UserData {
     string username = 1;
     string email = 2;
-    int32 mobile = 3;
+    string mobile = 3;
     string password = 4;
+    bool isActive = 5;
 }
 
 message RegistrationResponse {
@@ -56,4 +63,8 @@ message User {
   string id = 1;
   string email = 2;
   string name = 3;
+}
+
+message GetAllUsersResponse {
+    repeated UserData users = 1;
 }

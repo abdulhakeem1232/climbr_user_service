@@ -1,12 +1,13 @@
 import { Request } from "express";
 import { userService } from "../services/userService";
+import userRepository from "../repository/userRepository";
 import * as grpc from "@grpc/grpc-js";
 
 
 interface UserData {
   name: string;
   email: string;
-  mobile: number;
+  mobile: string;
   password: string;
 }
 
@@ -87,6 +88,39 @@ console.log(email,password,'login controler');
     }catch (err) {
       callback(err);
     } 
+  },
+  getall:async(call:any,callback:any)=>{
+    try{
+      console.log('get controlerr');
+      let users=await userRepository.getall()
+      console.log(users,'uuu');
+      const response = {
+        users: users 
+    };
+      callback(null,response)
+    }catch(err){
+      callback(err);
+    }
+  },
+  updateStatus:async(call:any,callback:any)=>{
+    try{
+      console.log('get controlerrstatus upadte');
+      let user=await userRepository.findByEmail(call.request.email)
+      let update,users;
+      if(user){
+         update=await userRepository.updateStatus(user)
+      }
+      if(update){
+     users=await userRepository.getall()
+      }
+      console.log(user,'uuu');
+      const response = {
+        users: users 
+    };
+      callback(null,response)
+    }catch(err){
+      callback(err);
+    }
   },
   
 };
