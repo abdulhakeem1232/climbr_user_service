@@ -7,6 +7,10 @@ service UserServices {
     rpc LoginwithGoogle(GoogleLoginRequest) returns (GoogleLoginResponse){};
     rpc Getall(Empty) returns (GetAllUsersResponse){};
     rpc UpdateStatus(UserData) returns (GetAllUsersResponse){};
+    rpc EmailValidate(Email) returns (EmailSuccess){};
+    rpc Passwordotp(passwordOtp) returns (passwordOtpResponse){};
+    rpc Passwordreset(resetPassword) returns (resetPasswordResponse){};
+    rpc ResendOtp(Email) returns (EmailSuccess){};
 }
 
 message Empty {
@@ -68,3 +72,33 @@ message User {
 message GetAllUsersResponse {
     repeated UserData users = 1;
 }
+
+message Email {
+    string email = 1;
+}
+
+message EmailSuccess {
+    bool success = 1;
+    string otp = 2;
+}
+
+message passwordOtp {
+  string otp = 1;
+  string email = 2;
+  string enteredOtp = 3;
+}
+
+message passwordOtpResponse {
+  bool success = 1;
+  string msg = 2;
+}
+
+message resetPassword {
+   string email = 1;
+   string password = 2;
+}
+
+message resetPasswordResponse {
+  bool success = 1;
+}
+

@@ -11,7 +11,7 @@ export const emailVerification = async (email: string, otp: string): Promise<voi
             },
         });
         console.log('mail');
-        
+
         const mailOptions = {
             from: 'Climbr <climbr@gmail.com>',
             to: email,
