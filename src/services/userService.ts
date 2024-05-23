@@ -49,15 +49,15 @@ export const userService = {
             throw new Error(`Failed to sign up: ${error}`);
         }
     },
-    verifyOtp: async (enterOtp: string, otp: string, userdata: User) => {
+    verifyOtp: async (enterOtp: string, otp: string, userdatas: User) => {
         try {
             console.log(otp, 'serviceotp');
 
             if (otp == enterOtp) {
-                console.log(userdata, 'enkwenadk');
+                console.log(userdatas, 'enkwenadk');
 
-                const usercreated = await userRepository.createUser(userdata);
-                return { success: true, message: 'Correct OTP' };
+                const userdata = await userRepository.createUser(userdatas);
+                return { success: true, message: 'Correct OTP', userdata: userdata };
 
             } else {
 

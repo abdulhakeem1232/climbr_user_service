@@ -12,6 +12,7 @@ export interface IUser extends Document {
     isAdmin: boolean
     isActive: boolean;
     password: string;
+    appliedJobs: { jobId: mongoose.Types.ObjectId, status: string }[];
     matchPassword: (enteredPassword: string) => Promise<boolean>
     updatePassword(newPassword: string): Promise<void>;
 }
@@ -33,7 +34,8 @@ const UserSchema: Schema<IUser> = new Schema({
     },
     avatar: {
         type: String,
-        required: false
+        required: false,
+        default: "profile.png"
     },
     education: [{
         type: String,
@@ -55,7 +57,11 @@ const UserSchema: Schema<IUser> = new Schema({
     password: {
         type: String,
 
-    }
+    },
+    appliedJobs: [{
+        jobId: { type: Schema.Types.ObjectId, ref: 'Jobs' },
+        status: { type: String, default: 'applied' }
+    }]
 })
 
 //pre-save password

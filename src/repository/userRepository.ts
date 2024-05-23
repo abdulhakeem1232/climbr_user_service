@@ -1,5 +1,24 @@
 import UserModel, { IUser } from "../models/userModel";
 import bcrypt from "bcryptjs";
+import { userService } from "../services/userService";
+import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import dotenv from 'dotenv'
+
+dotenv.config()
+
+const access_key = process.env.ACCESS_KEY
+const secret_access_key = process.env.SECRET_ACCESS_KEY
+const bucket_region = process.env.BUCKET_REGION
+const bucket_name = process.env.BUCKET_NAME
+
+const s3: S3Client = new S3Client({
+    credentials: {
+        accessKeyId: access_key || '',
+        secretAccessKey: secret_access_key || ''
+    },
+    region: process.env.BUCKET_REGION
+});
 
 interface User {
     username: string;
@@ -7,12 +26,13 @@ interface User {
     mobile: string
     password: string;
     isActive?: boolean;
-
+    avatar?: string;
 }
 interface Login {
     email: string;
     password: string;
 }
+
 
 const userRepository = {
     findByEmail: async (email: string): Promise<IUser | null> => {
@@ -25,21 +45,32 @@ const userRepository = {
             return null;
         }
     },
-    createUser: async (userdata: Partial<IUser>) => {
+    createUser: async (userdatas: Partial<IUser>) => {
         try {
-            console.log(userdata, 'reposuserdata', userdata.email, userdata.password, typeof (userdata));
-            const latestdata = userdata
-            console.log(latestdata, 'latseeetetet', typeof (userdata));
-
+            console.log(userdatas, 'reposuserdata', userdatas.email, userdatas.password, typeof (userdatas));
+            const latestdata = userdatas
+            console.log(latestdata, 'latseeetetet', typeof (userdatas));
+            const email = userdatas.email
             let created = await UserModel.create({
-                username: userdata.username,
-                email: userdata.email,
-                mobile: userdata.mobile,
-                password: userdata.password
+                username: userdatas.username,
+                email: userdatas.email,
+                mobile: userdatas.mobile,
+                password: userdatas.password
             });
             console.log('createdresult', created);
             await created.save()
-            return true
+            const userdata = await UserModel.findOne({ email: userdatas.email })
+            const getObjectParams = {
+                Bucket: bucket_name,
+                Key: userdata?.avatar,
+            }
+            const getObjectCommand = new GetObjectCommand(getObjectParams);
+            const url = await getSignedUrl(s3, getObjectCommand, { expiresIn: 3600 });
+            if (userdata) {
+                userdata.avatar = url
+            }
+
+            return userdata
         } catch (err) {
             console.log('Error', err);
 
@@ -56,6 +87,15 @@ const userRepository = {
                 const passwordvalue = await bcrypt.compare(userdata.password, user.password);
                 // let passwordvalue=userdata.password==user.password
                 console.log(passwordvalue, 'pass');
+                const getObjectParams = {
+                    Bucket: bucket_name,
+                    Key: user?.avatar,
+                }
+                const getObjectCommand = new GetObjectCommand(getObjectParams);
+                const url = await getSignedUrl(s3, getObjectCommand, { expiresIn: 3600 });
+                if (user) {
+                    user.avatar = url
+                }
                 if (passwordvalue) {
                     return { issuccess: true, isAdmin: user.isAdmin, user: user }
                 }
@@ -105,6 +145,24 @@ const userRepository = {
             return null;
         }
     },
+    findById: async (userId: string) => {
+        try {
+            let user = await UserModel.findOne({ _id: userId })
+            const getObjectParams = {
+                Bucket: bucket_name,
+                Key: user?.avatar,
+            }
+            const getObjectCommand = new GetObjectCommand(getObjectParams);
+            const url = await getSignedUrl(s3, getObjectCommand, { expiresIn: 3600 });
+            if (user) {
+                user.avatar = url
+            }
+            return user
+        } catch (err) {
+            console.error(`Error on update passowrd ${err}`);
+            return null;
+        }
+    }
 
 }
 

@@ -38,6 +38,7 @@ server.addService(userProto.UserServices.service, {
   Passwordotp: UserController.passwordOtp,
   Passwordreset: UserController.resertPassword,
   ResendOtp: UserController.resendOtp,
+  GetUserData: UserController.userData,
 })
 
 grpcServer();

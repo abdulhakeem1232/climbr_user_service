@@ -11,6 +11,7 @@ service UserServices {
     rpc Passwordotp(passwordOtp) returns (passwordOtpResponse){};
     rpc Passwordreset(resetPassword) returns (resetPasswordResponse){};
     rpc ResendOtp(Email) returns (EmailSuccess){};
+    rpc GetUserData(UserId) returns (UserData){};   
 }
 
 message Empty {
@@ -23,6 +24,8 @@ message UserData {
     string mobile = 3;
     string password = 4;
     bool isActive = 5;
+    string _id = 6;
+    string avatar = 7;
 }
 
 message RegistrationResponse {
@@ -41,6 +44,8 @@ message OtpVerifyRequest {
 message OtpVerifyResponse {
     bool success = 1;
     string message = 2;
+    UserData userdata = 3;
+
 }
 
 message LoginRequest {
@@ -100,5 +105,9 @@ message resetPassword {
 
 message resetPasswordResponse {
   bool success = 1;
+}
+
+message UserId {
+  string userId = 1;
 }
 

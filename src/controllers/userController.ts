@@ -79,7 +79,7 @@ export const UserController = {
       console.log('logingoogle service cotroller', call.request);
       const credential = call.request
       const response = await userService.authenticateWithGoogle(credential)
-      console.log(response, 'authresponse');
+      console.log(response, 'authresponse----');
       callback(null, { success: response.success, user: response.user });
     } catch (err) {
       callback(err);
@@ -161,6 +161,15 @@ export const UserController = {
       callback(null, response)
     }
     catch (err) {
+      callback(err)
+    }
+  },
+  userData: async (call: any, callback: any) => {
+    try {
+      let userdata = await userRepository.findById(call.request.userId)
+      console.log(userdata, '-----');
+      callback(null, userdata)
+    } catch (err) {
       callback(err)
     }
   }
