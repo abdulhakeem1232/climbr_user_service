@@ -172,5 +172,26 @@ export const UserController = {
     } catch (err) {
       callback(err)
     }
-  }
+  },
+  jobStatus: async (call: any, callback: any) => {
+    try {
+      const { userid, jobid, status } = call.request
+      console.log(userid, jobid, status);
+      let response = await userService.jobstatus(userid, jobid, status)
+      callback(null, response)
+    } catch (err) {
+      callback(err)
+    }
+  },
+  getStatus: async (call: any, callback: any) => {
+    try {
+      const { userId } = call.request;
+      let response = await userRepository.getStatus(userId)
+      console.log('controller', response);
+      callback(null, response)
+    } catch (err) {
+      callback(err)
+    }
+  },
+
 };

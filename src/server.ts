@@ -39,6 +39,8 @@ server.addService(userProto.UserServices.service, {
   Passwordreset: UserController.resertPassword,
   ResendOtp: UserController.resendOtp,
   GetUserData: UserController.userData,
+  UpdateJobStatus: UserController.jobStatus,
+  GetStatus: UserController.getStatus,
 })
 
 grpcServer();

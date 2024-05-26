@@ -3,7 +3,9 @@ import bcrypt from "bcryptjs";
 import { userService } from "../services/userService";
 import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import mongoose from "mongoose";
 import dotenv from 'dotenv'
+import { status } from "@grpc/grpc-js";
 
 dotenv.config()
 
@@ -162,7 +164,44 @@ const userRepository = {
             console.error(`Error on update passowrd ${err}`);
             return null;
         }
-    }
+    },
+    updatejobstatus: async (userid: string, jobid: string, status: string) => {
+        try {
+            const user = await UserModel.findById(userid);
+            if (!user) {
+                console.log(`User with ID ${userid} not found`);
+                return false;
+            }
+            const existingJobIndex = user.appliedJobs.findIndex(job => String(job.jobId) == jobid);
+            if (existingJobIndex !== -1) {
+
+                user.appliedJobs[existingJobIndex].status = status;
+            } else {
+                const jobIdObjectId = new mongoose.Types.ObjectId(jobid);
+
+                user.appliedJobs.push({ jobId: jobIdObjectId, status });
+            }
+
+
+            await user.save();
+            console.log(`Job status updated successfully for user ${userid}, job ${jobid}`);
+            return true;
+        } catch (err) {
+            console.error(`Error on getting all user: ${err}`);
+            return null;
+        }
+    },
+    getStatus: async (userId: string) => {
+        try {
+            let user = await UserModel.findOne({ _id: userId })
+            console.log(user?.isActive, 'suthstakwenwk');
+            let status = user?.isActive
+            return { status }
+        } catch (err) {
+            console.error(`Error on getting user status: ${err}`);
+            return null;
+        }
+    },
 
 }
 

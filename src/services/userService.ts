@@ -5,6 +5,7 @@ import { generateOTP } from "../utils/generateotp";
 import { emailVerification } from "../utils/sendmail";
 import dotenv from "dotenv";
 import { response } from "express";
+import { status } from "@grpc/grpc-js";
 dotenv.config();
 interface User {
     username: string;
@@ -151,14 +152,21 @@ export const userService = {
         try {
             let otp = generateOTP()
             console.log(otp, email);
-
             await emailVerification(email, otp)
             console.log('email sended');
             return { success: true, otp: otp }
         } catch (err) {
             throw new Error(`Failed to send mail: ${err}`);
         }
-    }
+    },
+    jobstatus: async (userid: string, jobid: string, status: string) => {
+        try {
+            let response = await userRepository.updatejobstatus(userid, jobid, status)
+            return response
+        } catch (err) {
+            throw new Error(`Failed to update job status: ${err}`);
+        }
+    },
 
 
 
