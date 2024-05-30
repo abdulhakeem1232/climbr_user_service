@@ -193,5 +193,15 @@ export const UserController = {
       callback(err)
     }
   },
+  getUserDetails: async (call: any, callback: any) => {
+    try {
+      const { userId } = call.request;
+      let response = await userRepository.getUser(userId)
+      console.log('controller-----', response, 'ppppppppppppppppppp');
+      callback(null, response)
+    } catch (err) {
+      callback(err)
+    }
+  },
 
 };

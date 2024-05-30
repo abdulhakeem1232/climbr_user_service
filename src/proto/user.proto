@@ -14,10 +14,17 @@ service UserServices {
     rpc GetUserData(UserId) returns (UserData){};
     rpc UpdateJobStatus(UpdateJobStatusRequest) returns (UpdateJobStatusResponse){};
     rpc GetStatus(statusRequest) returns (statusResponse){};
+    rpc UserDetails(UserId) returns (UserData){};
 }
 
 message Empty {
 
+}
+
+message JobDetails {
+  string jobId = 1;
+  string status = 2;
+  string _id = 3;
 }
 
 message UserData {
@@ -28,6 +35,9 @@ message UserData {
     bool isActive = 5;
     string _id = 6;
     string avatar = 7;
+    repeated string education = 8;
+    repeated string skills = 9;
+    repeated JobDetails appliedJobs = 10;
 }
 
 message RegistrationResponse {

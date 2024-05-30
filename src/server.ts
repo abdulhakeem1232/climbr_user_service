@@ -41,6 +41,7 @@ server.addService(userProto.UserServices.service, {
   GetUserData: UserController.userData,
   UpdateJobStatus: UserController.jobStatus,
   GetStatus: UserController.getStatus,
+  UserDetails: UserController.getUserDetails
 })
 
 grpcServer();

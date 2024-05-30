@@ -202,6 +202,24 @@ const userRepository = {
             return null;
         }
     },
+    getUser: async (userId: string) => {
+        try {
+            let user = await UserModel.findOne({ _id: userId })
+            const getObjectParams = {
+                Bucket: bucket_name,
+                Key: user?.avatar,
+            }
+            const getObjectCommand = new GetObjectCommand(getObjectParams);
+            const url = await getSignedUrl(s3, getObjectCommand, { expiresIn: 3600 });
+            if (user) {
+                user.avatar = url
+            }
+            return user
+        } catch (err) {
+            console.error(`Error on getting user status: ${err}`);
+            return null;
+        }
+    },
 
 }
 
