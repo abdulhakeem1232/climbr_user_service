@@ -7,8 +7,11 @@ export interface IUser extends Document {
     email: string;
     mobile: string;
     avatar?: string;
-    education?: string[];
+    education?: { school: string, degree: string, field: string, started: Date, ended: Date }[];
     skills?: string[];
+    experience?: { company: string, role: string, started: Date, ended: Date }[];
+    header?: string;
+    banner?: string;
     isAdmin: boolean
     isActive: boolean;
     password: string;
@@ -38,12 +41,21 @@ const UserSchema: Schema<IUser> = new Schema({
         default: "profile.png"
     },
     education: [{
-        type: String,
-        required: false
+        school: String,
+        degree: String,
+        field: String,
+        started: Date,
+        ended: Date
     }],
     skills: [{
         type: String,
         required: false
+    }],
+    experience: [{
+        company: String,
+        role: String,
+        started: Date,
+        ended: Date
     }],
     isAdmin: {
         type: Boolean,
@@ -61,7 +73,14 @@ const UserSchema: Schema<IUser> = new Schema({
     appliedJobs: [{
         jobId: { type: Schema.Types.ObjectId, ref: 'Jobs' },
         status: { type: String, default: 'applied' }
-    }]
+    }],
+    header: {
+        type: String
+    },
+    banner: {
+        type: String,
+        default: "coverphoto.jpg"
+    },
 })
 
 //pre-save password

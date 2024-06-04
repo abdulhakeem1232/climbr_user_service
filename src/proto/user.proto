@@ -15,6 +15,11 @@ service UserServices {
     rpc UpdateJobStatus(UpdateJobStatusRequest) returns (UpdateJobStatusResponse){};
     rpc GetStatus(statusRequest) returns (statusResponse){};
     rpc UserDetails(UserId) returns (UserData){};
+    rpc UpdateCover(Photo) returns (passwordOtpResponse){};
+    rpc UpdateProfile(Photo) returns (passwordOtpResponse){};
+    rpc UpdateProfileData(profileData) returns (passwordOtpResponse){};
+    rpc UpdateEducationData(educationData) returns (passwordOtpResponse){};
+    rpc UpdateExperienceData(experienceData) returns (passwordOtpResponse){};
 }
 
 message Empty {
@@ -38,6 +43,10 @@ message UserData {
     repeated string education = 8;
     repeated string skills = 9;
     repeated JobDetails appliedJobs = 10;
+    bool isAdmin = 11;
+    string banner = 12;
+    string header = 13;
+    repeated string expereince = 14;
 }
 
 message RegistrationResponse {
@@ -141,3 +150,38 @@ message statusResponse {
   bool status = 1;
 }
 
+message FileDetails {
+  string originalname = 1;
+  string encoding = 2;
+  string mimetype = 3;
+  bytes buffer = 4; 
+  int64 size = 5;
+}
+
+message Photo {
+  FileDetails image = 1;
+  string userId = 2;
+}
+
+message profileData {
+  string id = 1;
+  string mobile = 2;
+  string header = 3;
+}
+
+message educationData {
+  string userId = 1;
+  string school = 2;
+  string degree = 3;
+  string field = 4;
+  string started = 5;
+  string ended = 6;
+}
+
+message experienceData {
+  string userId = 1;
+  string company = 2;
+  string role = 3;
+  string started = 4;
+  string ended = 5;
+}

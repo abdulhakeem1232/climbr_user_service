@@ -3,6 +3,7 @@ import path from 'path'
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
 import { UserController } from './controllers/userController';
+import { profileController } from './controllers/profileController';
 import { connectDB } from './config/db';
 
 dotenv.config()
@@ -41,7 +42,11 @@ server.addService(userProto.UserServices.service, {
   GetUserData: UserController.userData,
   UpdateJobStatus: UserController.jobStatus,
   GetStatus: UserController.getStatus,
-  UserDetails: UserController.getUserDetails
+  UserDetails: UserController.getUserDetails,
+  UpdateCover: profileController.updateCoverPhoto,
+  UpdateProfile: profileController.updateProfilePhoto,
+  UpdateProfileData: profileController.updateProfileData,
+  UpdateEducationData: profileController.updateEducationData,
 })
 
 grpcServer();

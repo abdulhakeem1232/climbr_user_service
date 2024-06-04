@@ -4,6 +4,7 @@ import userRepository from "../repository/userRepository";
 import * as grpc from "@grpc/grpc-js";
 
 
+
 interface UserData {
   name: string;
   email: string;
@@ -203,5 +204,6 @@ export const UserController = {
       callback(err)
     }
   },
+
 
 };

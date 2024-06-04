@@ -84,11 +84,7 @@ const userRepository = {
             console.log(user);
             if (user?.isActive == false) return false
             if (user) {
-                console.log(userdata.password);
-
                 const passwordvalue = await bcrypt.compare(userdata.password, user.password);
-                // let passwordvalue=userdata.password==user.password
-                console.log(passwordvalue, 'pass');
                 const getObjectParams = {
                     Bucket: bucket_name,
                     Key: user?.avatar,
@@ -97,6 +93,15 @@ const userRepository = {
                 const url = await getSignedUrl(s3, getObjectCommand, { expiresIn: 3600 });
                 if (user) {
                     user.avatar = url
+                }
+                const getObjectParams2 = {
+                    Bucket: bucket_name,
+                    Key: user?.banner,
+                }
+                const getObjectCommand2 = new GetObjectCommand(getObjectParams2);
+                const url2 = await getSignedUrl(s3, getObjectCommand2, { expiresIn: 3600 });
+                if (user) {
+                    user.banner = url2
                 }
                 if (passwordvalue) {
                     return { issuccess: true, isAdmin: user.isAdmin, user: user }
@@ -159,6 +164,15 @@ const userRepository = {
             if (user) {
                 user.avatar = url
             }
+            const getObjectParams2 = {
+                Bucket: bucket_name,
+                Key: user?.banner,
+            }
+            const getObjectCommand2 = new GetObjectCommand(getObjectParams2);
+            const url2 = await getSignedUrl(s3, getObjectCommand2, { expiresIn: 3600 });
+            if (user) {
+                user.banner = url2
+            }
             return user
         } catch (err) {
             console.error(`Error on update passowrd ${err}`);
@@ -214,9 +228,74 @@ const userRepository = {
             if (user) {
                 user.avatar = url
             }
+            const getObjectParams2 = {
+                Bucket: bucket_name,
+                Key: user?.banner,
+            }
+            const getObjectCommand2 = new GetObjectCommand(getObjectParams2);
+            const url2 = await getSignedUrl(s3, getObjectCommand2, { expiresIn: 3600 });
+            if (user) {
+                user.banner = url2
+            }
             return user
         } catch (err) {
             console.error(`Error on getting user status: ${err}`);
+            return null;
+        }
+    },
+    updateCover: async (userId: string, image: string) => {
+        try {
+            let response = await UserModel.updateOne({ _id: userId }, { $set: { banner: image } })
+            if (response.modifiedCount > 0) {
+                return { success: true, message: 'Cover Image updated successfully' };
+            } else {
+                return { success: false, message: 'No image was updated' };
+            }
+
+        } catch (err) {
+            console.error(`Error on user cover: ${err}`);
+            return null;
+        }
+    },
+    updateProfile: async (userId: string, image: string) => {
+        try {
+            let response = await UserModel.updateOne({ _id: userId }, { $set: { avatar: image } })
+            if (response.modifiedCount > 0) {
+                return { success: true, message: 'Profile Image updated successfully' };
+            } else {
+                return { success: false, message: 'No image was updated' };
+            }
+
+        } catch (err) {
+            console.error(`Error on user cover: ${err}`);
+            return null;
+        }
+    },
+    updateProfileData: async (userId: string, mobile: string, header: string) => {
+        try {
+            let response = await UserModel.updateOne({ _id: userId }, { $set: { mobile: mobile, header: header } })
+            if (response.modifiedCount > 0) {
+                return { success: true, message: 'Profile Data updated successfully' };
+            } else {
+                return { success: false, message: 'No image was updated' };
+            }
+
+        } catch (err) {
+            console.error(`Error on user cover: ${err}`);
+            return null;
+        }
+    },
+    updateEducationData: async (userId: string, school: string, degree: string, field: string, started: string, ended: string) => {
+        try {
+            let response = await UserModel.updateOne({ _id: userId }, { $push: { education: { school, degree, field, started, ended } } })
+            if (response.modifiedCount > 0) {
+                return { success: true, message: 'Profile Data updated successfully' };
+            } else {
+                return { success: false, message: 'No image was updated' };
+            }
+
+        } catch (err) {
+            console.error(`Error on user cover: ${err}`);
             return null;
         }
     },

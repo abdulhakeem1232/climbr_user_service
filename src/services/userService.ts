@@ -4,8 +4,7 @@ import UserModel, { IUser } from "../models/userModel";
 import { generateOTP } from "../utils/generateotp";
 import { emailVerification } from "../utils/sendmail";
 import dotenv from "dotenv";
-import { response } from "express";
-import { status } from "@grpc/grpc-js";
+
 dotenv.config();
 interface User {
     username: string;
@@ -167,6 +166,7 @@ export const userService = {
             throw new Error(`Failed to update job status: ${err}`);
         }
     },
+
 
 
 
