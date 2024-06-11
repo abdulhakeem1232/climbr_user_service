@@ -47,6 +47,12 @@ server.addService(userProto.UserServices.service, {
   UpdateProfile: profileController.updateProfilePhoto,
   UpdateProfileData: profileController.updateProfileData,
   UpdateEducationData: profileController.updateEducationData,
+  UpdateExperienceData: profileController.updateExperienceData,
+  UpdateSkillsData: profileController.updateSkills,
+  GetFollowings: profileController.getFollowings,
+  FollowUser: profileController.follow,
+  UnFollowUser: profileController.unfollow,
+  SearchUser: profileController.searchUser
 })
 
 grpcServer();

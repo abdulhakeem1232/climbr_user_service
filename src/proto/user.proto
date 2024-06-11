@@ -20,6 +20,12 @@ service UserServices {
     rpc UpdateProfileData(profileData) returns (passwordOtpResponse){};
     rpc UpdateEducationData(educationData) returns (passwordOtpResponse){};
     rpc UpdateExperienceData(experienceData) returns (passwordOtpResponse){};
+    rpc UpdateSkillsData(skillsData) returns (passwordOtpResponse){};
+    rpc GetFollowings(UserId) returns (Followings){};
+    rpc FollowUser(Follow) returns (passwordOtpResponse){};
+    rpc UnFollowUser(Follow) returns (passwordOtpResponse){};
+    rpc SearchUser(search) returns (searchesUserResponse){};
+
 }
 
 message Empty {
@@ -32,6 +38,29 @@ message JobDetails {
   string _id = 3;
 }
 
+message search {
+  string text = 1;
+}
+
+message Education {
+  string school = 1;
+  string degree = 2;
+  string field = 3;
+  string started = 4;
+  string ended = 5;
+}
+
+message Skill {
+  string skill = 1;
+}
+
+message Experience {
+  string company = 1;
+  string role = 2;
+  string started = 3;
+  string ended = 4;
+}
+
 message UserData {
     string username = 1;
     string email = 2;
@@ -40,13 +69,17 @@ message UserData {
     bool isActive = 5;
     string _id = 6;
     string avatar = 7;
-    repeated string education = 8;
-    repeated string skills = 9;
+    repeated Education education = 8;
+    repeated Skill skills = 9;
     repeated JobDetails appliedJobs = 10;
     bool isAdmin = 11;
     string banner = 12;
     string header = 13;
-    repeated string expereince = 14;
+    repeated Experience experience = 14;
+}
+
+message searchesUserResponse {
+  repeated UserData users = 1;
 }
 
 message RegistrationResponse {
@@ -184,4 +217,18 @@ message experienceData {
   string role = 3;
   string started = 4;
   string ended = 5;
+}
+
+message skillsData {
+  string skill = 1;
+  string userId = 2;
+}
+
+message Followings {
+  repeated string followings = 1;
+}
+
+message Follow {
+  string userId = 1;
+  string guestId = 2;
 }

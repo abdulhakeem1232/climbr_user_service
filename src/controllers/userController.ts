@@ -167,6 +167,7 @@ export const UserController = {
   },
   userData: async (call: any, callback: any) => {
     try {
+
       let userdata = await userRepository.findById(call.request.userId)
       console.log(userdata, '-----');
       callback(null, userdata)

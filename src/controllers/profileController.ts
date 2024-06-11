@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import crypto from 'crypto'
 import sharp from 'sharp'
 import userRepository from "../repository/userRepository";
+import { profileRepository } from "../repository/profileRepository";
 
 
 
@@ -90,6 +91,72 @@ export const profileController = {
             let response = await userRepository.updateEducationData(userId, school, degree, field, started, ended)
             callback(null, response)
 
+        } catch (err) {
+            callback(err)
+        }
+    },
+    updateExperienceData: async (call: any, callback: any) => {
+        try {
+            const { userId, company, role, started, ended } = call.request
+            let response = await userRepository.updateExperienceData(userId, company, role, started, ended)
+            callback(null, response)
+
+        } catch (err) {
+            callback(err)
+        }
+    },
+    updateSkills: async (call: any, callback: any) => {
+        try {
+            console.log(call.request);
+            const { userId, skill } = call.request
+            let response = await userRepository.updateSkillData(userId, skill)
+            callback(null, response)
+
+        } catch (err) {
+            callback(err)
+        }
+    },
+    getFollowings: async (call: any, callback: any) => {
+        try {
+            console.log(call.request);
+            const { userId } = call.request
+            let response = await profileRepository.getFollowings(userId)
+            console.log('separete', response);
+
+            callback(null, response)
+        } catch (err) {
+            callback(err)
+        }
+    },
+    follow: async (call: any, callback: any) => {
+        try {
+            console.log(call.request);
+            const { userId, guestId } = call.request
+            let response = await profileRepository.follow(userId, guestId)
+            console.log('follow', response);
+            callback(null, response)
+        } catch (err) {
+            callback(err)
+        }
+    },
+    unfollow: async (call: any, callback: any) => {
+        try {
+            console.log(call.request);
+            const { userId, guestId } = call.request
+            let response = await profileRepository.unfollow(userId, guestId)
+            console.log('follow', response);
+            callback(null, response)
+        } catch (err) {
+            callback(err)
+        }
+    },
+    searchUser: async (call: any, callback: any) => {
+        try {
+            console.log(call.request);
+            const { text } = call.request
+            let response = await profileRepository.searchUser(text)
+            console.log('follow', response);
+            callback(null, response)
         } catch (err) {
             callback(err)
         }

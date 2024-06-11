@@ -5,7 +5,7 @@ import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import mongoose from "mongoose";
 import dotenv from 'dotenv'
-import { status } from "@grpc/grpc-js";
+import { Types } from 'mongoose';
 
 dotenv.config()
 
@@ -152,8 +152,9 @@ const userRepository = {
             return null;
         }
     },
-    findById: async (userId: string) => {
+    findById: async (userId: string | Types.ObjectId) => {
         try {
+
             let user = await UserModel.findOne({ _id: userId })
             const getObjectParams = {
                 Bucket: bucket_name,
@@ -288,6 +289,34 @@ const userRepository = {
     updateEducationData: async (userId: string, school: string, degree: string, field: string, started: string, ended: string) => {
         try {
             let response = await UserModel.updateOne({ _id: userId }, { $push: { education: { school, degree, field, started, ended } } })
+            if (response.modifiedCount > 0) {
+                return { success: true, message: 'Profile Data updated successfully' };
+            } else {
+                return { success: false, message: 'No image was updated' };
+            }
+
+        } catch (err) {
+            console.error(`Error on user cover: ${err}`);
+            return null;
+        }
+    },
+    updateExperienceData: async (userId: string, company: string, role: string, started: string, ended: string) => {
+        try {
+            let response = await UserModel.updateOne({ _id: userId }, { $push: { experience: { company, role, started, ended } } })
+            if (response.modifiedCount > 0) {
+                return { success: true, message: 'Profile Data updated successfully' };
+            } else {
+                return { success: false, message: 'No image was updated' };
+            }
+
+        } catch (err) {
+            console.error(`Error on user cover: ${err}`);
+            return null;
+        }
+    },
+    updateSkillData: async (userId: string, skill: string) => {
+        try {
+            let response = await UserModel.updateOne({ _id: userId }, { $push: { skills: { skill } } })
             if (response.modifiedCount > 0) {
                 return { success: true, message: 'Profile Data updated successfully' };
             } else {
