@@ -25,6 +25,7 @@ service UserServices {
     rpc FollowUser(Follow) returns (passwordOtpResponse){};
     rpc UnFollowUser(Follow) returns (passwordOtpResponse){};
     rpc SearchUser(search) returns (searchesUserResponse){};
+    rpc Logout(UserId) returns (OtpVerifyResponse){};
 
 }
 
@@ -76,6 +77,7 @@ message UserData {
     string banner = 12;
     string header = 13;
     repeated Experience experience = 14;
+    string lastLogged = 15;
 }
 
 message searchesUserResponse {
@@ -226,6 +228,7 @@ message skillsData {
 
 message Followings {
   repeated string followings = 1;
+  repeated string followers = 2;
 }
 
 message Follow {

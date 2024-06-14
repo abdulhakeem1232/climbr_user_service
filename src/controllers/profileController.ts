@@ -161,5 +161,16 @@ export const profileController = {
             callback(err)
         }
     },
+    logout: async (call: any, callback: any) => {
+        try {
+            console.log(call.request);
+            const { userId } = call.request
+            let response = await profileRepository.logout(userId)
+            console.log('logout', response);
+            callback(null, response)
+        } catch (err) {
+            callback(err)
+        }
+    },
 
 }

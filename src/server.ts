@@ -52,7 +52,8 @@ server.addService(userProto.UserServices.service, {
   GetFollowings: profileController.getFollowings,
   FollowUser: profileController.follow,
   UnFollowUser: profileController.unfollow,
-  SearchUser: profileController.searchUser
+  SearchUser: profileController.searchUser,
+  Logout: profileController.logout,
 })
 
 grpcServer();

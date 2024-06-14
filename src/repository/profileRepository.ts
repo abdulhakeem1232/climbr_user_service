@@ -21,7 +21,8 @@ export const profileRepository = {
             const user = await UserModel.findOne({ _id: userId });
             if (user) {
                 const followings = user.following || [];
-                return { followings };
+                const followers = user.followers || [];
+                return { followings, followers };
             } else {
                 console.error(`User with id ${userId} not found`);
                 return { followings: [] };
@@ -89,6 +90,16 @@ export const profileRepository = {
             console.error(`Error finding searching user: ${err}`);
             return null;
         }
-    }
+    },
+    logout: async (userId: string) => {
+        try {
+            const now = new Date();
+            await UserModel.updateOne({ _id: userId }, { $set: { lastLogged: now } })
+            return { success: true, message: "Logout Successfully" }
+        } catch (err) {
+            console.error(`Error logout user: ${err}`);
+            return null;
+        }
+    },
 
 }

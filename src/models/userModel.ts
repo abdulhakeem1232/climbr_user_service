@@ -18,6 +18,7 @@ export interface IUser extends Document {
     appliedJobs: { jobId: mongoose.Types.ObjectId, status: string }[];
     followers: mongoose.Types.ObjectId[];
     following: mongoose.Types.ObjectId[];
+    lastLogged: string;
     matchPassword: (enteredPassword: string) => Promise<boolean>
     updatePassword(newPassword: string): Promise<void>;
 }
@@ -92,6 +93,9 @@ const UserSchema: Schema<IUser> = new Schema({
             type: Schema.Types.ObjectId,
         }
     ],
+    lastLogged: {
+        type: String
+    }
 })
 
 //pre-save password
