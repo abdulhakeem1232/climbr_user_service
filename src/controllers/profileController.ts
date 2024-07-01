@@ -164,7 +164,8 @@ export const profileController = {
     getUserChartData: async (call: any, callback: any) => {
         try {
             const currentYear = new Date().getFullYear()
-            let response = await profileRepository.getChartDetails(currentYear)
+            const month = new Date().getMonth()
+            let response = await profileRepository.getChartDetails(currentYear, month)
             callback(null, response)
         } catch (err) {
             callback(err)

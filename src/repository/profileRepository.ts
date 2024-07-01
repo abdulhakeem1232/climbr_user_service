@@ -145,7 +145,7 @@ export const profileRepository = {
             return null;
         }
     },
-    getChartDetails: async (currentYear: number) => {
+    getChartDetails: async (currentYear: number, month: number) => {
         try {
             const userStats = await UserModel.aggregate([
                 {
@@ -177,7 +177,7 @@ export const profileRepository = {
                 }
 
             ])
-            const result = Array.from({ length: 12 }, (_, i) => ({
+            const result = Array.from({ length: month + 1 }, (_, i) => ({
                 month: i + 1,
                 count: 0
             }));
