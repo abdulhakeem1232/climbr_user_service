@@ -21,8 +21,6 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 export const userService = {
     userRegister: async (userData: Partial<IUser>): Promise<{ success: boolean, message: string, otp?: string, user_data?: User }> => {
         try {
-            console.log(userData, 'service');
-
             const email = userData.email
             if (email === undefined) {
                 throw new Error("Email is undefined");
@@ -42,52 +40,41 @@ export const userService = {
                 mobile: userData.mobile || '',
                 password: userData.password || ''
             };
-            console.log(user_data, 'wiwi');
-
             return { success: true, message: "Verification email sent", otp: otp, user_data: user_data };
         } catch (error) {
             throw new Error(`Failed to sign up: ${error}`);
         }
     },
+
     verifyOtp: async (enterOtp: string, otp: string, userdatas: User) => {
         try {
-            console.log(otp, 'serviceotp');
-
             if (otp == enterOtp) {
-                console.log(userdatas, 'enkwenadk');
-
                 const userdata = await userRepository.createUser(userdatas);
                 return { success: true, message: 'Correct OTP', userdata: userdata };
-
             } else {
-
                 return { success: false, message: 'Invalid OTP' };
             }
-
         } catch (error) {
             throw new Error(`Failed to varify otp: ${error}`);
         }
     },
+
     verifyLogin: async (userdata: Login) => {
         try {
             const loginResponse = await userRepository.validateUser(userdata)
-            console.log(loginResponse, 'gotbfrom rep');
             return loginResponse
         } catch (err) {
             throw new Error(`Failed to sign in: ${err}`);
         }
     },
+
     authenticateWithGoogle: async (credential: any) => {
         try {
-            console.log('iuqekahdi');
-            console.log('Credential received:', credential, typeof credential);
             const idToken = credential.credential;
             const ticket = await client.verifyIdToken({
                 idToken: idToken,
                 audience: process.env.GOOGLE_CLIENT_ID
             });
-            console.log(ticket, 'ticket');
-
             const payload = ticket.getPayload();
             if (!payload) {
                 throw new Error("Google authentication failed: Payload is missing");
@@ -95,7 +82,6 @@ export const userService = {
             const userId = payload.sub;
             const email = payload.email;
             const name = payload.name;
-
             let user = await UserModel.findOne({ googleId: userId })
             if (!user) {
                 user = new UserModel({
@@ -111,14 +97,13 @@ export const userService = {
             throw new Error(`Failed to sign in using google: ${err}`);
         }
     },
+
     validateEmail: async (email: string) => {
         try {
             const emailExist = await userRepository.findByEmail(email);
             if (emailExist) {
                 let otp = generateOTP()
-                console.log(otp, 'otp');
                 await emailVerification(email, otp)
-                console.log('email sended');
                 return { success: true, otp: otp }
             } else {
                 return { success: false }
@@ -128,6 +113,7 @@ export const userService = {
             throw new Error(`Failed to validate Email: ${err}`);
         }
     },
+
     otpPassword: async (enterOtp: string, otp: string) => {
         try {
             if (enterOtp == otp) {
@@ -139,6 +125,7 @@ export const userService = {
             throw new Error(`Failed to validate otp for for got password: ${err}`);
         }
     },
+
     resetpassword: async (email: string, password: string) => {
         try {
             let passwordUpdate = await userRepository.updatePassword(email, password)
@@ -150,14 +137,13 @@ export const userService = {
     sendMail: async (email: string) => {
         try {
             let otp = generateOTP()
-            console.log(otp, email);
             await emailVerification(email, otp)
-            console.log('email sended');
             return { success: true, otp: otp }
         } catch (err) {
             throw new Error(`Failed to send mail: ${err}`);
         }
     },
+
     jobstatus: async (userid: string, jobid: string, status: string) => {
         try {
             let response = await userRepository.updatejobstatus(userid, jobid, status)

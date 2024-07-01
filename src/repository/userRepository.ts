@@ -1,7 +1,6 @@
 import UserModel, { IUser } from "../models/userModel";
 import bcrypt from "bcryptjs";
-import { userService } from "../services/userService";
-import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import mongoose from "mongoose";
 import dotenv from 'dotenv'
@@ -11,7 +10,6 @@ dotenv.config()
 
 const access_key = process.env.ACCESS_KEY
 const secret_access_key = process.env.SECRET_ACCESS_KEY
-const bucket_region = process.env.BUCKET_REGION
 const bucket_name = process.env.BUCKET_NAME
 
 const s3: S3Client = new S3Client({
@@ -40,18 +38,16 @@ const userRepository = {
     findByEmail: async (email: string): Promise<IUser | null> => {
         try {
             const user = await UserModel.findOne({ email })
-            console.log('rep');
             return user
         } catch (err) {
             console.error(`Error finding user by email: ${err}`);
             return null;
         }
     },
+
     createUser: async (userdatas: Partial<IUser>) => {
         try {
-            console.log(userdatas, 'reposuserdata', userdatas.email, userdatas.password, typeof (userdatas));
             const latestdata = userdatas
-            console.log(latestdata, 'latseeetetet', typeof (userdatas));
             const email = userdatas.email
             let created = await UserModel.create({
                 username: userdatas.username,
@@ -59,7 +55,6 @@ const userRepository = {
                 mobile: userdatas.mobile,
                 password: userdatas.password
             });
-            console.log('createdresult', created);
             await created.save()
             const userdata = await UserModel.findOne({ email: userdatas.email })
             const getObjectParams = {
@@ -71,17 +66,15 @@ const userRepository = {
             if (userdata) {
                 userdata.avatar = url
             }
-
             return userdata
         } catch (err) {
             console.log('Error', err);
-
         }
     },
+
     validateUser: async (userdata: Login) => {
         try {
             const user = await UserModel.findOne({ email: userdata.email });
-            console.log(user);
             if (user?.isActive == false) return false
             if (user) {
                 const passwordvalue = await bcrypt.compare(userdata.password, user.password);
@@ -110,38 +103,35 @@ const userRepository = {
             return false
         } catch (err) {
             console.log('error', err);
-
         }
     },
+
     getall: async () => {
         try {
             const users = await UserModel.find({ isAdmin: false }, { '_id': 1, 'username': 1, 'email': 1, 'mobile': 1, 'isActive': 1 })
-            console.log('users', users);
             return users
         } catch (err) {
             console.error(`Error on getting all user: ${err}`);
             return null;
         }
     },
+
     updateStatus: async (User: User) => {
         try {
             const user = await UserModel.updateOne({ email: User.email }, { $set: { isActive: !User.isActive } })
-            console.log('user', user);
             return true
         } catch (err) {
             console.error(`Error on getting all user: ${err}`);
             return null;
         }
     },
+
     updatePassword: async (email: string, password: string) => {
         try {
             let user = await UserModel.findOne({ email: email })
             if (user) {
-
                 user.password = password;
                 await user.save();
-                console.log('updated password');
-
                 return { success: true }
             }
             else {
@@ -152,9 +142,9 @@ const userRepository = {
             return null;
         }
     },
+
     findById: async (userId: string | Types.ObjectId) => {
         try {
-
             let user = await UserModel.findOne({ _id: userId })
             const getObjectParams = {
                 Bucket: bucket_name,
@@ -180,36 +170,32 @@ const userRepository = {
             return null;
         }
     },
+
     updatejobstatus: async (userid: string, jobid: string, status: string) => {
         try {
             const user = await UserModel.findById(userid);
             if (!user) {
-                console.log(`User with ID ${userid} not found`);
                 return false;
             }
             const existingJobIndex = user.appliedJobs.findIndex(job => String(job.jobId) == jobid);
             if (existingJobIndex !== -1) {
-
                 user.appliedJobs[existingJobIndex].status = status;
             } else {
                 const jobIdObjectId = new mongoose.Types.ObjectId(jobid);
 
                 user.appliedJobs.push({ jobId: jobIdObjectId, status });
             }
-
-
             await user.save();
-            console.log(`Job status updated successfully for user ${userid}, job ${jobid}`);
             return true;
         } catch (err) {
             console.error(`Error on getting all user: ${err}`);
             return null;
         }
     },
+
     getStatus: async (userId: string) => {
         try {
             let user = await UserModel.findOne({ _id: userId })
-            console.log(user?.isActive, 'suthstakwenwk');
             let status = user?.isActive
             return { status }
         } catch (err) {
@@ -217,6 +203,7 @@ const userRepository = {
             return null;
         }
     },
+
     getUser: async (userId: string) => {
         try {
             let user = await UserModel.findOne({ _id: userId })
@@ -244,6 +231,7 @@ const userRepository = {
             return null;
         }
     },
+
     updateCover: async (userId: string, image: string) => {
         try {
             let response = await UserModel.updateOne({ _id: userId }, { $set: { banner: image } })
@@ -258,6 +246,7 @@ const userRepository = {
             return null;
         }
     },
+
     updateProfile: async (userId: string, image: string) => {
         try {
             let response = await UserModel.updateOne({ _id: userId }, { $set: { avatar: image } })
@@ -272,6 +261,7 @@ const userRepository = {
             return null;
         }
     },
+
     updateProfileData: async (userId: string, mobile: string, header: string) => {
         try {
             let response = await UserModel.updateOne({ _id: userId }, { $set: { mobile: mobile, header: header } })
@@ -286,6 +276,7 @@ const userRepository = {
             return null;
         }
     },
+
     updateEducationData: async (userId: string, school: string, degree: string, field: string, started: string, ended: string) => {
         try {
             let response = await UserModel.updateOne({ _id: userId }, { $push: { education: { school, degree, field, started, ended } } })
@@ -300,6 +291,7 @@ const userRepository = {
             return null;
         }
     },
+
     updateExperienceData: async (userId: string, company: string, role: string, started: string, ended: string) => {
         try {
             let response = await UserModel.updateOne({ _id: userId }, { $push: { experience: { company, role, started, ended } } })
@@ -314,6 +306,7 @@ const userRepository = {
             return null;
         }
     },
+
     updateSkillData: async (userId: string, skill: string) => {
         try {
             let response = await UserModel.updateOne({ _id: userId }, { $push: { skills: { skill } } })
@@ -322,7 +315,6 @@ const userRepository = {
             } else {
                 return { success: false, message: 'No image was updated' };
             }
-
         } catch (err) {
             console.error(`Error on user cover: ${err}`);
             return null;

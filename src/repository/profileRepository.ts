@@ -1,11 +1,10 @@
-import UserModel, { IUser } from "../models/userModel";
-import dotenv from 'dotenv'
-import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import UserModel from "../models/userModel";
+import { Types } from 'mongoose';
+import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const access_key = process.env.ACCESS_KEY
 const secret_access_key = process.env.SECRET_ACCESS_KEY
-const bucket_region = process.env.BUCKET_REGION
 const bucket_name = process.env.BUCKET_NAME
 
 const s3: S3Client = new S3Client({
@@ -15,6 +14,7 @@ const s3: S3Client = new S3Client({
     },
     region: process.env.BUCKET_REGION
 });
+
 export const profileRepository = {
     getFollowings: async (userId: string) => {
         try {
@@ -24,15 +24,14 @@ export const profileRepository = {
                 const followers = user.followers || [];
                 return { followings, followers };
             } else {
-                console.error(`User with id ${userId} not found`);
                 return { followings: [] };
             }
-
         } catch (err) {
             console.error(`Error finding user by email: ${err}`);
             return null;
         }
     },
+
     follow: async (userId: string, guestId: string) => {
         try {
             let following = await UserModel.updateOne({ _id: userId }, { $addToSet: { following: guestId } })
@@ -40,14 +39,13 @@ export const profileRepository = {
             if (following.modifiedCount === 1 && followers.modifiedCount === 1) {
                 return { success: true, message: 'Followed successfully' };
             } else {
-
                 throw new Error('Failed to update followings and/or followers');
             }
         } catch (err) {
-            console.error(`Error finding user by email: ${err}`);
             return null;
         }
     },
+
     unfollow: async (userId: string, guestId: string) => {
         try {
             let following = await UserModel.updateOne({ _id: userId }, { $pull: { following: guestId } })
@@ -55,7 +53,6 @@ export const profileRepository = {
             if (following.modifiedCount === 1 && followers.modifiedCount === 1) {
                 return { success: true, message: 'unFollowed successfully' };
             } else {
-
                 throw new Error('Failed to update followings and/or followers');
             }
         } catch (err) {
@@ -63,6 +60,7 @@ export const profileRepository = {
             return null;
         }
     },
+
     searchUser: async (text: string) => {
         try {
             if (text.trim() == '') {
@@ -83,7 +81,6 @@ export const profileRepository = {
                 const url = await getSignedUrl(s3, getObjectCommand, { expiresIn: 3600 });
                 user.avatar = url
             }
-            console.log(users, 'in repos');
 
             return { users };
         } catch (err) {
@@ -91,6 +88,7 @@ export const profileRepository = {
             return null;
         }
     },
+
     logout: async (userId: string) => {
         try {
             const now = new Date();
@@ -102,4 +100,99 @@ export const profileRepository = {
         }
     },
 
-}
+    getsuggestion: async (userId: string) => {
+        try {
+            const currentUser = await UserModel.findById(userId);
+            if (!currentUser) {
+                return {
+                    msg: "No user found"
+                };
+            }
+            const followingList = currentUser.following;
+            const usersFollowedByFollowings = await UserModel.find({
+                _id: { $in: followingList }
+            }, 'following');
+
+            let suggestedUserIds: Types.ObjectId[] = [];
+            usersFollowedByFollowings.forEach(user => {
+                suggestedUserIds = suggestedUserIds.concat(user.following);
+            });
+
+            suggestedUserIds = [...new Set(suggestedUserIds)];
+
+            suggestedUserIds = suggestedUserIds.filter(id => !followingList.includes(id) && id.toString() !== userId);
+
+            const users = await UserModel.find({
+                _id: { $in: suggestedUserIds },
+                email: { $ne: 'admin@gmail.com' }
+            });
+
+
+            for (let user of users) {
+                if (user.avatar) {
+                    const getObjectParams = {
+                        Bucket: bucket_name,
+                        Key: user.avatar,
+                    };
+                    const getObjectCommand = new GetObjectCommand(getObjectParams);
+                    const url = await getSignedUrl(s3, getObjectCommand, { expiresIn: 3600 });
+                    user.avatar = url;
+                }
+            }
+            return { users };
+        } catch (err) {
+            console.error(`Error fetching suggestions: ${err}`);
+            return null;
+        }
+    },
+    getChartDetails: async (currentYear: number) => {
+        try {
+            const userStats = await UserModel.aggregate([
+                {
+                    $match: {
+                        $expr: {
+                            $eq: [{ $year: "$createdAt" }, currentYear]
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: {
+                            month: { $month: "$createdAt" },
+                        },
+                        count: { $sum: 1 }
+                    }
+                },
+                {
+                    $sort: {
+                        "_id.month": 1
+                    }
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        month: "$_id.month",
+                        count: 1
+                    }
+                }
+
+            ])
+            const result = Array.from({ length: 12 }, (_, i) => ({
+                month: i + 1,
+                count: 0
+            }));
+            userStats.forEach(stat => {
+                const index = result.findIndex(r => r.month == stat.month);
+                if (index !== -1) {
+                    result[index].count = stat.count;
+                }
+            });
+            let count = await UserModel.find({ isAdmin: false }).countDocuments()
+            return { result, count }
+        } catch (err) {
+            console.error(`Error fetching chart: ${err}`);
+            return null;
+        }
+    },
+
+} 

@@ -26,8 +26,9 @@ service UserServices {
     rpc UnFollowUser(Follow) returns (passwordOtpResponse){};
     rpc SearchUser(search) returns (searchesUserResponse){};
     rpc Logout(UserId) returns (OtpVerifyResponse){};
-
-}
+    rpc Suggestion(UserId) returns (searchesUserResponse){}; 
+    rpc GetReports(Empty) returns (GetUserStatsResponse){};
+ }
 
 message Empty {
 
@@ -78,6 +79,8 @@ message UserData {
     string header = 13;
     repeated Experience experience = 14;
     string lastLogged = 15;
+    repeated string following = 16;
+    repeated string followers = 17;
 }
 
 message searchesUserResponse {
@@ -234,4 +237,14 @@ message Followings {
 message Follow {
   string userId = 1;
   string guestId = 2;
+}
+
+message MonthStats {
+    int32 month = 1;
+    int32 count = 2;
+}
+
+message GetUserStatsResponse {
+    repeated MonthStats result = 1;
+    string count = 2;
 }

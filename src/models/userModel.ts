@@ -19,6 +19,7 @@ export interface IUser extends Document {
     followers: mongoose.Types.ObjectId[];
     following: mongoose.Types.ObjectId[];
     lastLogged: string;
+    createdAt: Date;
     matchPassword: (enteredPassword: string) => Promise<boolean>
     updatePassword(newPassword: string): Promise<void>;
 }
@@ -95,6 +96,11 @@ const UserSchema: Schema<IUser> = new Schema({
     ],
     lastLogged: {
         type: String
+    },
+    createdAt:
+    {
+        type: Date,
+        default: Date.now
     }
 })
 
