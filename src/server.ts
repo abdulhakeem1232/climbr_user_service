@@ -16,7 +16,7 @@ const server = new grpc.Server();
 
 const grpcServer = () => {
   server.bindAsync(
-    `0.0.0.0:${process.env.PORT}`,
+    `0.0.0.0:${process.env.USER_PORT}`,
     grpc.ServerCredentials.createInsecure(),
     (err, port) => {
       if (err) {
@@ -55,7 +55,8 @@ server.addService(userProto.UserServices.service, {
   SearchUser: profileController.searchUser,
   Logout: profileController.logout,
   Suggestion: profileController.getSuggestion,
-  GetReports: profileController.getUserChartData
+  GetReports: profileController.getUserChartData,
+  updateJobStatus: profileController.updateJobStatus,
 })
 
 grpcServer();

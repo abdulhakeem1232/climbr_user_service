@@ -171,5 +171,15 @@ export const profileController = {
             callback(err)
         }
     },
+    updateJobStatus: async (call: any, callback: any) => {
+        try {
+            let { jobId, userId, status } = call.request
+            let response = await profileRepository.updateJobStatus(jobId, userId, status)
+            callback(null, response)
+        } catch (err) {
+            callback(err)
+        }
+    },
 
 }
+

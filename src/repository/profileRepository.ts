@@ -69,7 +69,7 @@ export const profileRepository = {
             }
             const regex = new RegExp(text, 'i');
             const users = await UserModel.find({
-                username: regex
+                username: regex, isAdmin: false
             });
             for (let user of users) {
                 const getObjectParams = {
@@ -194,5 +194,23 @@ export const profileRepository = {
             return null;
         }
     },
+    updateJobStatus: async (jobId: string, userId: string, status: string) => {
+        try {
+            let user = await UserModel.findOne({ _id: userId })
+            if (!user) {
+                throw new Error(`user with ${userId} not found`);
+            }
+            user.appliedJobs.forEach((job) => {
+                if (job.jobId.toString() == jobId) {
+                    job.status = status
+                }
+            })
+            user.save()
+            return { success: true, msg: "Succefully Changed job Status" }
+        } catch (err) {
+            console.error(`Error update job status: ${err}`);
+            return null;
+        }
+    }
 
 } 

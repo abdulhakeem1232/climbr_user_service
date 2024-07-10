@@ -28,6 +28,7 @@ service UserServices {
     rpc Logout(UserId) returns (OtpVerifyResponse){};
     rpc Suggestion(UserId) returns (searchesUserResponse){}; 
     rpc GetReports(Empty) returns (GetUserStatsResponse){};
+    rpc updateJobStatus(StatusUpdate) returns (passwordOtpResponse){};
  }
 
 message Empty {
@@ -50,6 +51,12 @@ message Education {
   string field = 3;
   string started = 4;
   string ended = 5;
+}
+
+message StatusUpdate {
+    string jobId = 1;
+    string userId = 2;
+    string status = 3;
 }
 
 message Skill {

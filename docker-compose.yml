@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  user-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${USER_PORT}:${USER_PORT}"
+    env_file:
+      - .env
+    networks:
+      - climbr_network
+
+networks:
+  climbr_network:
+    driver: bridge

@@ -38,6 +38,7 @@ export const UserController = {
 
   login: async (call: any, callback: any) => {
     try {
+      console.log(call.request);
       const email = call.request.email;
       const password = call.request.password
       const userdata = {
@@ -55,6 +56,7 @@ export const UserController = {
         callback(null, { success: loginResponse })
       }
     } catch (err) {
+      console.log(err, 'eror while login')
       callback(err);
     }
   },
