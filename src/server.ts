@@ -13,10 +13,10 @@ const packageDefinition = protoLoader.loadSync(path.join(__dirname, "proto/user.
 const userProto = grpc.loadPackageDefinition(packageDefinition) as any;
 
 const server = new grpc.Server();
-
+const Domain = process.env.NODE_ENV === 'dev' ? "0.0.0.0" : process.env.PRO_DOMAIN_USER
 const grpcServer = () => {
   server.bindAsync(
-    `0.0.0.0:${process.env.USER_PORT}`,
+    `${Domain}:${process.env.USER_PORT}`,
     grpc.ServerCredentials.createInsecure(),
     (err, port) => {
       if (err) {

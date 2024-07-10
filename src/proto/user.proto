@@ -131,7 +131,7 @@ message GoogleLoginRequest {
 
 message GoogleLoginResponse {
   bool success = 1;
-  User user = 2;
+  UserData user = 2;
 }
 
 message User {

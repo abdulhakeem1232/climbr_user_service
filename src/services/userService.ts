@@ -1,6 +1,8 @@
 import userRepository from "../repository/userRepository";
 import { OAuth2Client } from "google-auth-library";
 import UserModel, { IUser } from "../models/userModel";
+import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { generateOTP } from "../utils/generateotp";
 import { emailVerification } from "../utils/sendmail";
 import dotenv from "dotenv";
@@ -17,7 +19,17 @@ interface Login {
     password: string;
 }
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const access_key = process.env.ACCESS_KEY
+const secret_access_key = process.env.SECRET_ACCESS_KEY
+const bucket_name = process.env.BUCKET_NAME
 
+const s3: S3Client = new S3Client({
+    credentials: {
+        accessKeyId: access_key || '',
+        secretAccessKey: secret_access_key || ''
+    },
+    region: process.env.BUCKET_REGION
+});
 export const userService = {
     userRegister: async (userData: Partial<IUser>): Promise<{ success: boolean, message: string, otp?: string, user_data?: User }> => {
         try {
@@ -91,6 +103,25 @@ export const userService = {
                     password: "defaultPassword",
                 });
                 await user.save();
+            }
+            user = await UserModel.findOne({ googleId: userId })
+            const getObjectParams = {
+                Bucket: bucket_name,
+                Key: user?.avatar,
+            }
+            const getObjectCommand = new GetObjectCommand(getObjectParams);
+            const url = await getSignedUrl(s3, getObjectCommand, { expiresIn: 3600 });
+            if (user) {
+                user.avatar = url
+            }
+            const getObjectParams2 = {
+                Bucket: bucket_name,
+                Key: user?.banner,
+            }
+            const getObjectCommand2 = new GetObjectCommand(getObjectParams2);
+            const url2 = await getSignedUrl(s3, getObjectCommand2, { expiresIn: 3600 });
+            if (user) {
+                user.banner = url2
             }
             return { user: user, success: true }
         } catch (err) {
