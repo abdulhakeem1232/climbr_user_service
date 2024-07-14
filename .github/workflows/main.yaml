@@ -25,7 +25,7 @@ jobs:
         run: |
           docker buildx create --use
           docker buildx inspect --bootstrap
-          docker buildx build -t abdulhakeem1/api-gateway:latest --push .
+          docker buildx build -t abdulhakeem1/user-service:latest --push .
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -33,4 +33,4 @@ jobs:
         with: 
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
       - run: doctl kubernetes cluster kubeconfig save climbr
-      - run: kubectl rollout restart deployment api-gateway-deployment 
+      - run: kubectl rollout restart deployment user-service-deployment 
