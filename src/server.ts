@@ -11,12 +11,16 @@ connectDB()
 
 const packageDefinition = protoLoader.loadSync(path.join(__dirname, "proto/user.proto"))
 const userProto = grpc.loadPackageDefinition(packageDefinition) as any;
+const UserPort = process.env.USER_PORT || '8081';
 
 const server = new grpc.Server();
-const Domain = process.env.NODE_ENV === 'dev' ? "0.0.0.0" : process.env.PRO_DOMAIN_USER
+// const Domain = process.env.NODE_ENV === 'dev' ? "0.0.0.0" : process.env.PRO_DOMAIN_USER
+const Domain = "0.0.0.0";
+console.log(`Attempting to bind gRPC server to ${Domain}:${UserPort}`);
+
 const grpcServer = () => {
   server.bindAsync(
-    `${Domain}:${process.env.USER_PORT}`,
+    `${Domain}:${UserPort}`,
     grpc.ServerCredentials.createInsecure(),
     (err, port) => {
       if (err) {

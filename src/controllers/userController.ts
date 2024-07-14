@@ -38,7 +38,7 @@ export const UserController = {
 
   login: async (call: any, callback: any) => {
     try {
-      console.log(call.request);
+      console.log(call.request, '99999999999999999999');
       const email = call.request.email;
       const password = call.request.password
       const userdata = {
