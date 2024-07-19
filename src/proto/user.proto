@@ -29,6 +29,10 @@ service UserServices {
     rpc Suggestion(UserId) returns (searchesUserResponse){}; 
     rpc GetReports(Empty) returns (GetUserStatsResponse){};
     rpc updateJobStatus(StatusUpdate) returns (passwordOtpResponse){};
+    rpc Getskills(Empty) returns (Skills){};
+    rpc AddSkill(Skill) returns (Skill){};
+    rpc UpdateSkill (Skill) returns (Skill){};
+    rpc DeleteSkill (Skill) returns (OtpVerifyResponse){};
  }
 
 message Empty {
@@ -40,6 +44,7 @@ message JobDetails {
   string status = 2;
   string _id = 3;
 }
+
 
 message search {
   string text = 1;
@@ -59,8 +64,14 @@ message StatusUpdate {
     string status = 3;
 }
 
+message Skills {
+  repeated Skill skills = 1;
+}
+
 message Skill {
   string skill = 1;
+  string _id = 2;
+  bool status = 3;
 }
 
 message Experience {

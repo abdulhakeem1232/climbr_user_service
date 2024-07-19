@@ -94,6 +94,8 @@ export const profileController = {
     updateSkills: async (call: any, callback: any) => {
         try {
             const { userId, skill } = call.request
+            console.log('skills', userId, skill);
+
             let response = await userRepository.updateSkillData(userId, skill)
             callback(null, response)
         } catch (err) {

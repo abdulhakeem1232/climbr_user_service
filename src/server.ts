@@ -4,6 +4,7 @@ import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
 import { UserController } from './controllers/userController';
 import { profileController } from './controllers/profileController';
+import { skillController } from './controllers/skillsController';
 import { connectDB } from './config/db';
 
 dotenv.config()
@@ -61,6 +62,10 @@ server.addService(userProto.UserServices.service, {
   Suggestion: profileController.getSuggestion,
   GetReports: profileController.getUserChartData,
   updateJobStatus: profileController.updateJobStatus,
+  Getskills: skillController.getall,
+  AddSkill: skillController.addSkill,
+  UpdateSkill: skillController.updateSkill,
+  deleteSkill: skillController.deleteSkill,
 })
 
 grpcServer();

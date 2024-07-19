@@ -309,7 +309,7 @@ const userRepository = {
 
     updateSkillData: async (userId: string, skill: string) => {
         try {
-            let response = await UserModel.updateOne({ _id: userId }, { $push: { skills: { skill } } })
+            let response = await UserModel.updateOne({ _id: userId }, { $addToSet: { skills: { skill } } })
             if (response.modifiedCount > 0) {
                 return { success: true, message: 'Profile Data updated successfully' };
             } else {
