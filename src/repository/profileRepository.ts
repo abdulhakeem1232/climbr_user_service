@@ -122,10 +122,18 @@ export const profileRepository = {
 
             suggestedUserIds = suggestedUserIds.filter(id => !followingList.includes(id) && id.toString() !== userId);
 
-            const users = await UserModel.find({
+            let users = await UserModel.find({
                 _id: { $in: suggestedUserIds },
                 email: { $ne: 'admin@gmail.com' }
             });
+            if (users.length < 5) {
+                const additionalUsers = await UserModel.find({
+                    _id: { $nin: [...suggestedUserIds, ...followingList, userId] },
+                    email: { $ne: 'admin@gmail.com' }
+                }).limit(5 - users.length);
+
+                users = users.concat(additionalUsers);
+            }
 
 
             for (let user of users) {
