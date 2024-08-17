@@ -135,7 +135,6 @@ export const profileRepository = {
                 users = users.concat(additionalUsers);
             }
 
-
             for (let user of users) {
                 if (user.avatar) {
                     const getObjectParams = {
